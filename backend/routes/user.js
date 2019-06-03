@@ -19,7 +19,4 @@ api.post('/', UserController.store);
 api.post('/login', UserController.login);
 api.post('/upload-image', [md_auth.ensureAuth, md_upload], UserController.uploadImage);
 api.put('/', md_auth.ensureAuth, UserController.update);
-api.get('/pruebas', md_auth.ensureAuth, (req, res) => {
-    res.send({ algo: 'algo' });
-})
 module.exports = api;

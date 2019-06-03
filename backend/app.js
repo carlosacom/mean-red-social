@@ -7,6 +7,7 @@ let app = express();
 
 // cargar rutas
 let user_routes = require('./routes/user');
+let follow_routes = require('./routes/follow');
 
 // middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -17,5 +18,7 @@ app.use(bodyParser.json());
 
 // rutas
 app.use('/users', user_routes);
+app.use('/follows', follow_routes);
+
 //exportar
 module.exports = app;
