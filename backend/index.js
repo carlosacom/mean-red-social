@@ -6,6 +6,6 @@ let port = 3000;
 
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/curso_red_social', { useNewUrlParser: true })
+mongoose.connect('mongodb://localhost:27017/curso_red_social', { useNewUrlParser: true, useFindAndModify: false })
     .then(() => app.listen(port, () => console.log(`Server online: port: ${ port }`)))
     .catch(() => console.log('Server Error In Mongodb'));

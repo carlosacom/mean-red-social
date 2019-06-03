@@ -2,6 +2,8 @@
 
 let bcrypt = require('bcrypt-nodejs');
 let mongoosePaginate = require('mongoose-pagination');
+let fs = require('fs');
+let path = require('path');
 // modelo
 let User = require('../models/user');
 
@@ -97,7 +99,46 @@ let userController = {
         });
     },
     update: (req, res) => {
-
+        let user = req.user;
+        let update = req.body;
+        delete update.password;
+        User.findByIdAndUpdate(user.sub, update, { new: true }, (err, userUpdated) => {
+            if (err) return res.status(500).send({ errors: `Error al busar el usuario: ${err}` });
+            if (!userUpdated) return res.status(404).send({ errors: 'no existe el usuario en la base de datos' });
+            return res.status(200).send(userUpdated);
+        });
+    },
+    uploadImage: (req, res) => {
+        let user = req.user;
+        if (req.files) {
+            let file_path = req.files.image.path;
+            let file_split = file_path.split('\\');
+            let filename = file_split[file_split.length - 1];
+            let ext_file = filename.split('\.')[1];
+            if (ext_file != 'png' && ext_file != 'jpg' && ext_file != 'jpeg' && ext_file != 'gif') {
+                return fs.unlink(file_path, (err) => {
+                    return res.status(500).send({ errors: `Error en la subida de archivo: ${err}` });
+                });
+            }
+            User.findByIdAndUpdate(user.sub, { image: filename }, { new: true }, (err, userUpdated) => {
+                if (err) return res.status(500).send({ errors: `Error al buscar el usuario: ${err}` });
+                if (!userUpdated) return res.status(404).send({ errors: 'no existe el usuario en la base de datos' });
+                return res.status(200).send(userUpdated);
+            });
+        } else {
+            return res.status(404).send({ errors: 'No se ha Subido Ningun Archivo' });
+        }
+    },
+    getImage: (req, res) => {
+        let image_file = req.params.imageFile;
+        let path_file = `./uploads/users/${image_file}`;
+        fs.exists(path_file, (exists) => {
+            if (exists) {
+                res.sendFile(path.resolve(path_file));
+            } else {
+                res.status(500).send({ errors: 'No existe la imagen' });
+            }
+        });
     }
 };
 
