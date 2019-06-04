@@ -15,6 +15,7 @@ let api = express.Router();
 api.get('/all/:page?', md_auth.ensureAuth, UserController.index);
 api.get('/only/:id', md_auth.ensureAuth, UserController.show);
 api.get('/image/:imageFile', UserController.getImage);
+api.get('/count/:id?', md_auth.ensureAuth, UserController.getCounters);
 api.post('/', UserController.store);
 api.post('/login', UserController.login);
 api.post('/upload-image', [md_auth.ensureAuth, md_upload], UserController.uploadImage);

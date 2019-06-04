@@ -47,6 +47,22 @@ let FollowController = {
             if (!follows) return res.status(400).send({ errors: 'No estas siguiendo a ningun usuario' });
             return res.status(200).send({ total, pages: Math.ceil(total / itemPerPage), follows });
         });
+    },
+    // devolver usuarios que sigo
+    getMyfollows: (req, res) => {
+        Follow.find({ user: req.user.sub }).populate('followed').exec((err, follows) => {
+            if (err) return res.status(500).send({ errors: `Error en el servidor: ${err}` });
+            if (!follows) return res.status(400).send({ errors: 'No estas siguiendo a ningun usuario' });
+            return res.status(200).send(follows);
+        });
+    },
+    //devolver usuarios que me siguen
+    getFollowBacks: (req, res) => {
+        Follow.find({ followed: req.user.sub }).populate('user').exec((err, follows) => {
+            if (err) return res.status(500).send({ errors: `Error en el servidor: ${err}` });
+            if (!follows) return res.status(400).send({ errors: 'No estas siguiendo a ningun usuario' });
+            return res.status(200).send(follows);
+        });
     }
 };
 

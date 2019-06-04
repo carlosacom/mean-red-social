@@ -6,6 +6,7 @@ let fs = require('fs');
 let path = require('path');
 // modelo
 let User = require('../models/user');
+let Follow = require('../models/follow');
 
 // servicios
 let jwtAuth = require('../services/jwt');
@@ -83,8 +84,36 @@ let userController = {
             if (err) return res.status(500).send({ errors: `Error al busar el usuario: ${err}` });
             if (!user) return res.status(404).send({ errors: 'no existe el usuario en la base de datos' });
             user.password = undefined;
-            return res.status(200).send(user);
+            userController.followsThisUser(req.user.sub, id).then(values => {
+                return res.status(200).send({ user, values });
+            });
         });
+    },
+    followsThisUser: async(identity_user_id, user_id) => {
+        let following = await Follow.findOne({ user: identity_user_id, followed: user_id }).exec()
+            .then(follow => follow)
+            .catch(err => handleError(err));
+        let followed = await Follow.findOne({ user: user_id, followed: identity_user_id }).exec()
+            .then(follow => follow)
+            .catch(err => handleError(err));
+        return { following, followed };
+    },
+    followsUsersId: async(user) => {
+        let following = await Follow.find({ user }).select({ _id: 0, __v: 0, user: 0 }).exec()
+            .then(follows => {
+                let follows_clean = [];
+                follows.forEach(follow => follows_clean.push(follow.followed));
+                return follows_clean;
+            })
+            .catch(err => handleError(err));
+        let followed = await Follow.find({ followed: user }).select({ _id: 0, __v: 0, followed: 0 }).exec()
+            .then(follows => {
+                let follows_clean = [];
+                follows.forEach(follow => follows_clean.push(follow.user));
+                return follows_clean;
+            })
+            .catch(err => handleError(err));
+        return { following, followed };
     },
     index: (req, res) => {
         let page = 1;
@@ -95,7 +124,10 @@ let userController = {
         User.find().sort('_id').paginate(page, itemsPerPage, (err, users, total) => {
             if (err) return res.status(500).send({ errors: `Error al buscar los usuarios: ${err}` });
             if (!users) return res.status(404).send({ errors: 'no hay usuarios disponibles' });
-            return res.status(200).send({ users, total, pages: Math.ceil(total / itemsPerPage) });
+            userController.followsUsersId(req.user.sub)
+                .then(values => {
+                    return res.status(200).send({ users, total, pages: Math.ceil(total / itemsPerPage), follows: values });
+                });
         });
     },
     update: (req, res) => {
@@ -139,7 +171,21 @@ let userController = {
                 res.status(500).send({ errors: 'No existe la imagen' });
             }
         });
-    }
+    },
+    getCounters: (req, res) => {
+        let id = (req.params.id) ? req.params.id : req.user.sub;
+        userController.getCountFollow(id)
+            .then(follows => res.status(200).send(follows));
+    },
+    getCountFollow: async user_id => {
+        let following = await Follow.countDocuments({ user: user_id }).exec()
+            .then(count => count)
+            .catch(err => handleError(err));
+        let followed = await Follow.countDocuments({ followed: user_id }).exec()
+            .then(count => count)
+            .catch(err => handleError(err));
+        return { followed, following };
+    },
 };
 
 module.exports = userController;
