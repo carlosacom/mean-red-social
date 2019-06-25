@@ -7,7 +7,7 @@ let path = require('path');
 // modelo
 let User = require('../models/user');
 let Follow = require('../models/follow');
-
+let Publication = require('../models/publication');
 // servicios
 let jwtAuth = require('../services/jwt');
 
@@ -184,7 +184,11 @@ let userController = {
         let followed = await Follow.countDocuments({ followed: user_id }).exec()
             .then(count => count)
             .catch(err => handleError(err));
-        return { followed, following };
+        let publications = await Publication.countDocuments({ user: user_id }).exec()
+        .then(count => count)
+        .catch(err => handleError(err));
+
+        return { followed, following, publications };
     },
 };
 
