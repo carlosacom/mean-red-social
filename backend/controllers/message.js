@@ -44,6 +44,20 @@ let MessageController = {
             if (err) return res.status(500).send({ errors: `Error en el servidor: ${err}` });
             return res.status(200).send({ messages, page, total, pages: Math.ceil(total / itemsPerPage)  });
         });
+    },
+    getUnViewed: (req, res) => {
+        let user = req.user;
+        Message.find({ receiver: user.sub, viewed: false }).countDocuments((err, count) => {
+            if (err) return res.status(500).send({ errors: `Error en el servidor: ${err}` });
+            return res.status(200).send({ count });
+        });
+    },
+    setViewed: (req, res) => {
+        let user = req.user;
+        Message.updateMany({ receiver: user.sub, viewed: false }, { viewed: true }, (err, messageUdated) => {
+            if (err) return res.status(500).send({ errors: `Error en el servidor: ${err}` });
+            return res.status(200).send(messageUdated);
+        });
     }
 };
 
