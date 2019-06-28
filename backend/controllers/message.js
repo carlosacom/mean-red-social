@@ -26,6 +26,24 @@ let MessageController = {
             if (!messageStoraged) return res.status(404).send({ errors: 'el mensaje no se ha guardado' });
             return res.status(200).send(messageStoraged);
         });
+    },
+    getReceivedMessages: (req, res) => {
+        let user = req.user;
+        let page = (req.query.page) ? req.query.page : 1 ;
+        let itemsPerPage = 4;
+        Message.find({ receiver: user.sub }).populate('emitter', 'name surname _id email nick image').paginate(page, itemsPerPage, (err, messages, total) => {
+            if (err) return res.status(500).send({ errors: `Error en el servidor: ${err}` });
+            return res.status(200).send({ messages, page, total, pages: Math.ceil(total / itemsPerPage)  });
+        });
+    },
+    getEmittedMessages: (req, res) => {
+        let user = req.user;
+        let page = (req.query.page) ? req.query.page : 1 ;
+        let itemsPerPage = 4;
+        Message.find({ emitter: user.sub }).populate('receiver', 'name surname _id email nick image').paginate(page, itemsPerPage, (err, messages, total) => {
+            if (err) return res.status(500).send({ errors: `Error en el servidor: ${err}` });
+            return res.status(200).send({ messages, page, total, pages: Math.ceil(total / itemsPerPage)  });
+        });
     }
 };
 
