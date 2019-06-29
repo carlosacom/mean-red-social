@@ -32,7 +32,7 @@ export class BackendService {
 
   private catchError(err: any) {
     err = (err.status === 403 || err.status === 401) ? this._userAuth.logout() : err;
-    return throwError(err);
+    return throwError(err.error.errors);
   }
 
   postLogin = data => this.postQuery('users/login', data, false);
