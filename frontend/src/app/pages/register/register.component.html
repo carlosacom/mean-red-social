@@ -1,0 +1,58 @@
+<div class="my-4">
+  <h1>{{ title }}</h1>
+</div>
+<hr>
+<form [formGroup]="myForm" (submit)="onSubmit()">
+  <div class="form-group">
+    <label for="name">Nombre</label>
+    <input type="text" class="form-control" formControlName="name" placeholder="Nombre del usuario">
+    <span class="help-block">
+      <small class="text-danger" *ngIf="myForm.controls['name'].errors?.required && myForm.controls['name'].touched"> Nombre es Obligatorio</small>
+      <small class="text-danger" *ngIf="myForm.controls['name'].errors?.pattern && myForm.controls['name'].touched"> Nombre Invalido</small>
+    </span>
+  </div>
+  <div class="form-group">
+    <label for="surname">Apellidos</label>
+    <input type="text" class="form-control" formControlName="surname" placeholder="Apellidos del usuario">
+    <span class="help-block">
+      <small class="text-danger" *ngIf="myForm.controls['surname'].errors?.required && myForm.controls['surname'].touched"> Apellidos son Obligatorio</small>
+      <small class="text-danger" *ngIf="myForm.controls['surname'].errors?.pattern && myForm.controls['surname'].touched"> Apellidos Invalido</small>
+    </span>
+  </div>
+  <div class="form-group">
+    <label for="nick">NickName</label>
+    <input type="text" class="form-control" formControlName="nick" placeholder="Nickname del usuario">
+    <span class="help-block">
+      <small class="text-danger" *ngIf="myForm.controls['nick'].errors?.required && myForm.controls['nick'].touched"> NickName es Obligatorio</small>
+      <small class="text-danger" *ngIf="myForm.controls['nick'].errors?.pattern && myForm.controls['nick'].touched"> NickName Invalido</small>
+    </span>
+  </div>
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" class="form-control" formControlName="email" placeholder="Email del usuario">
+    <span class="help-block">
+      <small class="text-danger" *ngIf="myForm.controls['email'].errors?.required && myForm.controls['email'].touched"> Email es Obligatorio</small>
+      <small class="text-danger" *ngIf="myForm.controls['email'].errors?.pattern && myForm.controls['email'].touched"> Email Invalido</small>
+    </span>
+  </div>
+  <div class="form-group">
+    <label for="password">Contraseña</label>
+    <input type="password" class="form-control" formControlName="password" placeholder="Contraseña del usuario">
+    <span class="help-block">
+      <small class="text-danger" *ngIf="myForm.controls['password'].errors?.required && myForm.controls['password'].touched"> La contraseña es necesaria</small>
+      <small class="text-danger" *ngIf="myForm.controls['password'].errors?.minlength && myForm.controls['password'].touched"> Por lo menos ocho caracteres</small>
+      <small class="text-danger" *ngIf="myForm.controls['password'].errors?.maxlength && myForm.controls['password'].touched"> Menor a  dieciséis caracteres</small>
+      <small class="text-danger" *ngIf="(myForm.controls['password'].value != myForm.controls['password_confirmation'].value) && myForm.controls['password_confirmation'].touched"> Contraseñas no Coinciden</small>
+    </span>
+  </div>
+  <div class="form-group">
+    <label for="password_confirmation">Contraseña</label>
+    <input type="password" class="form-control" formControlName="password_confirmation" placeholder="Repite la Contraseña">
+    <span class="help-block">
+      <small class="text-danger" *ngIf="myForm.controls['password_confirmation'].errors?.required && myForm.controls['password_confirmation'].touched"> La contraseña es necesaria</small>
+      <small class="text-danger" *ngIf="myForm.controls['password_confirmation'].errors?.minlength && myForm.controls['password_confirmation'].touched"> Por lo menos ocho caracteres</small>
+      <small class="text-danger" *ngIf="myForm.controls['password_confirmation'].errors?.maxlength && myForm.controls['password_confirmation'].touched"> Menor a dieciséis caracteres</small>
+    </span>
+  </div>
+  <button class="btn btn-primary" [disabled]="myForm.invalid || (myForm.controls['password'].value != myForm.controls['password_confirmation'].value)"><i class="fas fa-sign-in-alt"></i> Registrate!</button>
+</form>
