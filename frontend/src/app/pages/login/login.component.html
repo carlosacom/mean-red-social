@@ -1,26 +1,29 @@
 <div class="my-4">
-  <h1>{{ title }}</h1>
+    <h1>{{ title }}</h1>
 </div>
 <hr>
-<form [formGroup]="myForm" (submit)="onSubmit()">
-  <div class="form-group">
-    <label for="email">Email</label>
-    <input type="email" class="form-control" formControlName="email" placeholder="Email del usuario">
-    <span class="help-block">
+<form [formGroup]="myForm" (submit)="onSubmit()" class="my-4">
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" class="form-control" formControlName="email" placeholder="Email del usuario">
+        <span class="help-block">
       <small class="text-danger" *ngIf="myForm.controls['email'].errors?.required && myForm.controls['email'].touched"> Email es Obligatorio</small>
       <small class="text-danger" *ngIf="myForm.controls['email'].errors?.pattern && myForm.controls['email'].touched"> Email Invalido</small>
     </span>
-  </div>
-  <div class="form-group">
-    <label for="password">Contraseña</label>
-    <input type="password" class="form-control" formControlName="password" placeholder="Contraseña del usuario">
-    <span class="help-block">
+    </div>
+    <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" class="form-control" formControlName="password" placeholder="Contraseña del usuario">
+        <span class="help-block">
       <small class="text-danger" *ngIf="myForm.controls['password'].errors?.required && myForm.controls['password'].touched"> La contraseña es necesaria</small>
       <small class="text-danger" *ngIf="myForm.controls['password'].errors?.minlength && myForm.controls['password'].touched"> Por lo menos ocho caracteres</small>
       <small class="text-danger" *ngIf="myForm.controls['password'].errors?.maxlength && myForm.controls['password'].touched"> Menor a  dieciséis caracteres</small>
     </span>
-  </div>
-  <button type="submit" class="btn btn-primary" [disabled]="myForm.invalid"><i class="fas fa-sign-in-alt"></i> Identifícate!</button>
+    </div>
+    <button type="submit" class="btn btn-primary" [disabled]="myForm.invalid"><i class="fas fa-sign-in-alt"></i> Identifícate!</button>
+    <a class="btn btn-link" routerLink="/registro">¿No tienes cuenta regístrate?</a>
 </form>
 
-<app-loading></app-loading>
+<app-loading *ngIf="loading"></app-loading>
+
+<app-message-alert [message]="messageAlert"></app-message-alert>

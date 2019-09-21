@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { BackendService } from '../../services/backend/backend.service';
 import { UserService } from '../../services/auth/user.service';
+import { MessageAlert } from '../../models/message-alert';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -9,13 +11,19 @@ import { UserService } from '../../services/auth/user.service';
   styles: []
 })
 export class LoginComponent implements OnInit {
-  public title: string;
+  title: string;
   myForm: FormGroup;
+  loading: boolean;
+  messageAlert: MessageAlert;
+
   constructor(
     private _backend: BackendService,
-    public userAuth: UserService
+    public userAuth: UserService,
+    private _router: Router
   ) {
     this.title = 'Identifícate';
+    this.loading = false;
+    this.messageAlert = new MessageAlert(false, '', '');
   }
 
   ngOnInit() {
@@ -38,12 +46,19 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.myForm.invalid) return ;
+    if (this.myForm.invalid) return;
+    this.loading = true;
     this._backend.postLogin(this.myForm.value).subscribe(
       response => {
         this.userAuth.login(response);
+        this.loading = false;
+        this._router.navigate(['/inicio']);
       }, error => {
         console.log(error);
+        this.messageAlert.color = 'alert-danger';
+        this.messageAlert.text = error;
+        this.messageAlert.success = true;
+        this.loading = false;
       }
     );
   }
